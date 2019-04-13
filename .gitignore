@@ -1,0 +1,9 @@
+.vscode
+cache
+commands.txt
+docs-conf.php
+docs/
+phpunit.xml
+test
+tests
+vendor
