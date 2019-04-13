@@ -296,9 +296,11 @@ class DBQueryBuilder implements DBQueryBuilderInterface {
         if ($table_name == null) {
             throw new QueryBuilderException('Table name is empty');
         }
+        $select_query = $this->getSelectSqlQuery();
+        $select_query_params = $this->getSelectSqlQueryParams();
         if (count($this->getUnionResultSet()) > 0) {
-            $sql = "( " . $this->getSelectSqlQuery() . " ) ";
-            $params = $this->getSelectSqlQueryParams();
+            $sql = "( " . $select_query . " ) ";
+            $params = $select_query_params;
             $union_result_set = $this->getUnionResultSet();
             foreach ($union_result_set as $res) {
                 $reflectionObject = new \ReflectionObject($res[1]);
@@ -316,96 +318,10 @@ class DBQueryBuilder implements DBQueryBuilderInterface {
                 throw new DBQueryBuilderException($e->getMessage());
             }
         }
-        $select_string = $this->generateSelectString();
-        $where_string = $this->generateWhereString();
-        $where_params = $this->generateWhereParams();
-        $order_by_string = $this->generateOrderByString();
-        $join_condition_string = $this->generateJoinConditionString();
-        $group_by_string = $this->generateGroupByString();
-        $having_string = $this->generateHavingString();
-        $having_params = $this->generateHavingParams();
-        $limit = $this->getLimit();
-        $offset = $this->getOffset();
-        $sql = "SELECT " . $select_string;
-        $params = array();
-        if ($limit !== null && $offset === null) {
-            $sql .= " FROM " . $table_name;
-            if (!empty($join_condition_string)) {
-                $sql .= $join_condition_string;
-            }
-            if (!empty($where_string)) {
-                $sql .= " WHERE " . $where_string;
-                $params = array_merge($params, $where_params);
-            }
-            if (!empty($group_by_string)) {
-                $sql .= " GROUP BY " . $group_by_string;
-            }
-
-            if (!empty($having_string)) {
-                $sql .= " HAVING " . $having_string;
-                $params = array_merge($params, $having_params);
-            }
-
-            if (!empty($order_by_string)) {
-                $sql .= " ORDER BY " . $order_by_string;
-            }
-            $sql .= " FETCH FIRST " . $limit . " ROWS ONLY ";
-        } else if ($limit !== null && $offset !== null) {
-            $sql = " SELECT * ";
-            if (!empty($order_by_string)) {
-                $order_by_string = " ORDER BY " . $order_by_string;
-            } else {
-                $order_by_string = "";
-            }
-            $sql .= "  FROM  ( SELECT ROW_NUMBER() OVER (" . $order_by_string . ") AS ROW_ID , DATA.*  FROM ( SELECT " . $select_string . " FROM " . $table_name;
-
-            if (!empty($join_condition_string)) {
-                $sql .= $join_condition_string;
-            }
-
-            if (!empty($where_string)) {
-                $sql .= " WHERE " . $where_string;
-                $params = array_merge($params, $where_params);
-            }
-            if (!empty($group_by_string)) {
-                $sql .= " GROUP BY " . $group_by_string;
-            }
-
-            if (!empty($having_string)) {
-                $sql .= " HAVING " . $having_string;
-                $params = array_merge($params, $having_params);
-            }
-
-            $sql .= " ) as DATA ) WHERE ROW_ID BETWEEN " . $offset . " AND " . ($offset + ($limit - 1));
-        } else {
-            $sql .= " FROM " . $table_name;
-
-            if (!empty($join_condition_string)) {
-                $sql .= $join_condition_string;
-            }
-
-            if (!empty($where_string)) {
-                $sql .= " WHERE " . $where_string;
-                $params = array_merge($params, $where_params);
-            }
-
-            if (!empty($group_by_string)) {
-                $sql .= " GROUP BY " . $group_by_string;
-            }
-
-            if (!empty($having_string)) {
-                $sql .= " HAVING " . $having_string;
-                $params = array_merge($params, $having_params);
-            }
-
-            if (!empty($order_by_string)) {
-                $sql .= " ORDER BY " . $order_by_string;
-            }
-        }
         try {
             $map_functions = $this->getMapFunction();
             if (count($map_functions) > 0) {
-                $stmt = $this->getDBConnection()->query($sql, $params);
+                $stmt = $this->getDBConnection()->query($select_query, $select_query_params);
                 $out = array();
                 while ($row = $stmt->fetch()) {
                     foreach ($map_functions as $map) {
@@ -415,7 +331,7 @@ class DBQueryBuilder implements DBQueryBuilderInterface {
                 }
                 return $out;
             } else {
-                return $this->getDBConnection()->query($sql, $params)->fetchAll();
+                return $this->getDBConnection()->query($select_query, $select_query_params)->fetchAll();
             }
         } catch (\Exception $e) {
             throw new DBQueryBuilderException($e->getMessage());
