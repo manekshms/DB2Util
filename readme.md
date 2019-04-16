@@ -1,6 +1,7 @@
 # DB2Util
 [![Total Downloads](https://img.shields.io/packagist/dt/manekshms/db2util.svg)](https://packagist.org/packages/manekshms/db2util)
-[![Latest Stable Version](https://img.shields.io/packagist/v/manekshms/db2util.svg)](https://packagist.org/packages/manekshms/db2util)
+[![Latest Stable Version](https://img.shields.io/packagist/v/manekshms/db2util.svg)](https://packagist.org/packages/manekshms/db2util)  
+
 Database utility and query builder for db2 
 
 ## Table of Contents
