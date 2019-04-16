@@ -1,6 +1,7 @@
 {
     "name": "manekshms/db2util",
     "description": "DB2 Database Utility and Query builder",
+    "keywords": ["db2", "db2query builder", "db2 util"],
     "type": "library",
     "license": "MIT",
     "authors": [
