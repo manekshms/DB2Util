@@ -16,6 +16,16 @@ Database utility and query builder for db2
 * php >= 5.4
 * enable php extension [pdo_ibm](https://www.ibm.com/support/knowledgecenter/no/SSEPGG_9.7.0/com.ibm.swg.im.dbclient.php.doc/doc/t0011926.html)
 
+## Installation
+
+Install latest version with
+
+```bash
+composer require manekshms/db2util
+```   
+
+
+
 ## Basic Usage 
 
 ### Configuration and connection
