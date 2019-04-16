@@ -1,6 +1,6 @@
 {
-    "name": "maneksh/db-adapter",
-    "description": "Database Adapter",
+    "name": "maneksh/DB2Util",
+    "description": "DB2 Database Utility and Query builder",
     "type": "library",
     "authors": [
         {
